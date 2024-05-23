@@ -1,6 +1,6 @@
 FROM node:21 as NODE_BUILD
-WORKDIR /go/src/github.com/siyuan-note/siyuan/
-ADD . /go/src/github.com/siyuan-note/siyuan/
+WORKDIR /go/src/github.com/liehu/siyuan/
+ADD . /go/src/github.com/liehu/siyuan/
 RUN apt-get update && \
     apt-get install -y jq
 RUN cd app && \
@@ -18,18 +18,18 @@ RUN apt-get autoremove -y
 RUN rm -rf /var/lib/apt/lists/*
 
 FROM golang:alpine as GO_BUILD
-WORKDIR /go/src/github.com/siyuan-community/siyuan/
-COPY --from=NODE_BUILD /go/src/github.com/siyuan-community/siyuan/ /go/src/github.com/siyuan-community/siyuan/
+WORKDIR /go/src/github.com/liehu/siyuan/
+COPY --from=NODE_BUILD /go/src/github.com/liehu/siyuan/ /go/src/github.com/liehu/siyuan/
 ENV GO111MODULE=on
 ENV CGO_ENABLED=1
 RUN apk add --no-cache gcc musl-dev && \
-    cd kernel && go build --tags fts5 -v -ldflags "-s -w -X github.com/siyuan-community/siyuan/kernel/util.Mode=prod" && \
+    cd kernel && go build --tags fts5 -v -ldflags "-s -w -X github.com/liehu/siyuan/kernel/util.Mode=prod" && \
     mkdir /opt/siyuan/ && \
-    mv /go/src/github.com/siyuan-community/siyuan/app/appearance/ /opt/siyuan/ && \
-    mv /go/src/github.com/siyuan-community/siyuan/app/stage/ /opt/siyuan/ && \
-    mv /go/src/github.com/siyuan-community/siyuan/app/guide/ /opt/siyuan/ && \
-    mv /go/src/github.com/siyuan-community/siyuan/app/changelogs/ /opt/siyuan/ && \
-    mv /go/src/github.com/siyuan-community/siyuan/kernel/kernel /opt/siyuan/ && \
+    mv /go/src/github.com/liehu/siyuan/app/appearance/ /opt/siyuan/ && \
+    mv /go/src/github.com/liehu/siyuan/app/stage/ /opt/siyuan/ && \
+    mv /go/src/github.com/liehu/siyuan/app/guide/ /opt/siyuan/ && \
+    mv /go/src/github.com/liehu/siyuan/app/changelogs/ /opt/siyuan/ && \
+    mv /go/src/github.com/liehu/siyuan/kernel/kernel /opt/siyuan/ && \
     find /opt/siyuan/ -name .git | xargs rm -rf
 
 FROM alpine:latest
